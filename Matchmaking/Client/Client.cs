@@ -12,7 +12,6 @@ namespace Client
     class Client
     {
         public const int DATA_BUFFER_SIZE = 4096;
-        public const int WAITING_ROOM_ID = 0;
 
         private static Client _instance = new Client();
 
@@ -32,7 +31,6 @@ namespace Client
             tcp = new TCP();
             _ip = IPAddress.Loopback;
             _port = 26950;
-            currentRoom = WAITING_ROOM_ID;
         }
 
         public void ConnectToServer()
@@ -154,6 +152,7 @@ namespace Client
                     if (_socket != null)
                     {
                         _stream.BeginWrite(packet.ToArray(), 0, packet.Length(), null, null);
+                        Console.WriteLine($"{packet.Length()} bytes sent to server...");
                     }
                 }
                 catch (Exception e)
@@ -167,7 +166,8 @@ namespace Client
         {
             packetHandlers = new Dictionary<int, PacketHandler>()
                 {
-                    {(int)ServerPackets.welcome, ClientHandle.Welcome }
+                    { (int)ServerPackets.welcome, ClientHandle.Welcome },
+                    { (int)ServerPackets.roomChange, ClientHandle.RoomChange }
                 };
         }
 

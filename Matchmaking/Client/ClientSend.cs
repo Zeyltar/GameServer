@@ -24,6 +24,17 @@ namespace Client
                 SendTCPData(packet);
             }
         }
+
+        public static void RoomChangedReceived()
+        {
+            
+            using (Packet packet = new Packet((int)ClientPackets.roomChangedReceived))
+            {
+                packet.Write(Client.Instance.currentRoom);
+
+                SendTCPData(packet);
+            }
+        }
         #endregion
     }
 }

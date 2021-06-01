@@ -19,8 +19,8 @@ namespace Server
         private int _port;
         private IPAddress _ip;
         private TcpListener _listener;
-        public delegate void PacketHadler(int fromClient, Packet packet);
-        public static Dictionary<int, PacketHadler> packetHandlers;
+        public delegate void PacketHandler(int fromClient, int fromRoom, Packet packet);
+        public static Dictionary<int, PacketHandler> packetHandlers;
 
         public SocketServer(IPAddress ip, int port)
         {
@@ -53,8 +53,15 @@ namespace Server
                     Room room = new Room(_rooms[WAITING_ROOM_ID].Clients.GetRange(0, 2));
                     _rooms[WAITING_ROOM_ID].Clients.RemoveRange(0, 2);
                     _rooms.Add(room);
-
                     Console.WriteLine("New room created");
+                    int index = _rooms.LastIndexOf(room);
+
+                    foreach (Client client in _rooms[index].Clients)
+                    {
+                        client.CurrentRoom = index;
+                    }
+
+                    ServerSend.RoomChange(index, $"Your room has been changed. You are now in room {index}");
                 }
                 Thread.Sleep(1000);
             }
@@ -78,9 +85,10 @@ namespace Server
 
         private void InitializeServerData()
         {
-            packetHandlers = new Dictionary<int, PacketHadler>()
+            packetHandlers = new Dictionary<int, PacketHandler>()
             {
-                {(int)ClientPackets.welcomeReceived, ServerHandle.WelcomeReceived }
+                {(int)ClientPackets.welcomeReceived, ServerHandle.WelcomeReceived },
+                {(int)ClientPackets.roomChangedReceived, ServerHandle.RoomChangedReceived }
             };
         }
     }

@@ -13,7 +13,6 @@ namespace Server
             if (toRoom < 0)
                 return;
 
-
             packet.WriteLength();
             foreach (Client client in SocketServer.Rooms[toRoom].Clients)
             {
@@ -83,7 +82,18 @@ namespace Server
             {
                 packet.Write(message);
                 packet.Write(toClient);
+                packet.Write(toRoom);
                 SendTCPData(toRoom, toClient, packet);
+            }
+        }
+
+        public static void RoomChange(int toRoom, string message)
+        {
+            using (Packet packet = new Packet((int)ServerPackets.roomChange))
+            {
+                packet.Write(message);
+                packet.Write(toRoom);
+                SendTCPDataToRoom(toRoom, packet);
             }
         }
         #endregion

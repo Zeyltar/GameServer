@@ -63,7 +63,7 @@ namespace Server
 
                 _stream.BeginRead(_receivedBuffer, 0, DATA_BUFFER_SIZE, ReceiveCallback, null);
 
-                ServerSend.Welcome(_currentRoom, _id, $"Welcome, you joined the waiting room, there is currently {SocketServer.Rooms[_currentRoom].Clients.Count} client(s) waiting");
+                ServerSend.Welcome(_currentRoom, _id, $"Welcome client {_id}, you joined the waiting room.\nThere is currently {SocketServer.Rooms[_currentRoom].Clients.Count} client(s) waiting");
             }
 
             public void SendData(Packet packet)
@@ -97,8 +97,8 @@ namespace Server
                     byte[] data = new byte[byteLength];
                     Array.Copy(_receivedBuffer, data, byteLength);
 
-                    _receivedData.Reset(HandleData(data));
                     Console.WriteLine($"{byteLength} bytes received from {_socket.Client.RemoteEndPoint}...");
+                    _receivedData.Reset(HandleData(data));
                     
                     _stream.BeginRead(_receivedBuffer, 0, DATA_BUFFER_SIZE, ReceiveCallback, null);
                 }
@@ -130,7 +130,7 @@ namespace Server
                     using (Packet packet = new Packet(packetBytes))
                     {
                         int packetId = packet.ReadInt();
-                        SocketServer.packetHandlers[packetId](_id, packet);
+                        SocketServer.packetHandlers[packetId](_id, _currentRoom, packet);
 
                     }
                     packetLength = 0;

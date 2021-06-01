@@ -8,22 +8,48 @@ namespace Server
 {
     class ServerHandle
     {
-        public static void WelcomeReceived(int fromClient, Packet packet)
+        public static void WelcomeReceived(int fromClient, int fromRoom, Packet packet)
         {
             int clientIdCheck = packet.ReadInt();
 
-            foreach (Client client in SocketServer.Rooms[SocketServer.WAITING_ROOM_ID].Clients)
+
+            foreach (Client client in SocketServer.Rooms[fromRoom].Clients)
             {
                 if (client.Id == fromClient)
                 {
-                    Console.WriteLine($"{client.tcp.Socket.Client.RemoteEndPoint} connected successfully and is now client {fromClient}");
                     if (fromClient != clientIdCheck)
                     {
                         Console.WriteLine($"Client ID is different from packet client ID");
                     }
+                    else
+                    {
+                        Console.WriteLine($"{client.tcp.Socket.Client.RemoteEndPoint} connected successfully and is now client {fromClient}");
+                    }
                     return;
                 }
             }
+        }
+
+        public static void RoomChangedReceived(int fromClient, int fromRoom, Packet packet)
+        {
+            int cltCrtRoomCheck = packet.ReadInt();
+
+            foreach (Client client in SocketServer.Rooms[fromRoom].Clients)
+            {
+                if (client.Id == fromClient)
+                {
+                    if (fromRoom != cltCrtRoomCheck)
+                    {
+                        Console.WriteLine($"Client {fromClient} in room {fromRoom} has assumed the wrong room ({cltCrtRoomCheck})");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Client {fromClient} successfully joined room {fromRoom}");
+                    }
+                    return;
+                }
+            }
+
         }
     }
 }

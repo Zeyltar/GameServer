@@ -20,7 +20,6 @@ namespace Server
             }
         }
 
-
         public List<Client> Clients { get => _clients; }
     }
 }
