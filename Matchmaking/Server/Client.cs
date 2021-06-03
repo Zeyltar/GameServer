@@ -14,12 +14,14 @@ namespace Server
         private readonly int _id;
         private int _currentRoom;
         public TCP tcp;
+        public bool isValidated;
 
         public Client(int id)
         {
             _id = id;
             tcp = new TCP(id);
-            _currentRoom = SocketServer.WAITING_ROOM_ID;
+            _currentRoom = Constants.WAITING_ROOM_ID;
+            isValidated = false;
         }
         public int Id { get => _id; }
         public int CurrentRoom
@@ -63,7 +65,7 @@ namespace Server
 
                 _stream.BeginRead(_receivedBuffer, 0, DATA_BUFFER_SIZE, ReceiveCallback, null);
 
-                ServerSend.Welcome(_currentRoom, _id, $"Welcome client {_id}, you joined the waiting room.\nThere is currently {SocketServer.Rooms[_currentRoom].Clients.Count} client(s) waiting");
+                ServerSend.Welcome(_currentRoom, _id, $"Welcome client {_id}, you joined the waiting room.\nThere is currently {Room.Rooms[_currentRoom].Clients.Count} client(s) waiting");
             }
 
             public void SendData(Packet packet)
@@ -79,7 +81,7 @@ namespace Server
                 catch (Exception e)
                 {
 
-                    Console.WriteLine($"Error sending data to client {_id} via TCP: {e.ToString()}");
+                    Console.WriteLine($"Error sending data to client {_id} via TCP: {e}");
                 }
             }
 
@@ -126,13 +128,15 @@ namespace Server
                 while (packetLength > 0 && packetLength <= _receivedData.UnreadLength())
                 {
                     byte[] packetBytes = _receivedData.ReadBytes(packetLength);
-
-                    using (Packet packet = new Packet(packetBytes))
+                    ThreadManager.ExecuteOnMainThread(() => 
                     {
-                        int packetId = packet.ReadInt();
-                        SocketServer.packetHandlers[packetId](_id, _currentRoom, packet);
-
-                    }
+                        using (Packet packet = new Packet(packetBytes))
+                        {
+                            int packetId = packet.ReadInt();
+                            SocketServer.packetHandlers[packetId](_id, _currentRoom, packet);
+                        }
+                    });
+                    
                     packetLength = 0;
                     if (_receivedData.UnreadLength() >= 4)
                     {

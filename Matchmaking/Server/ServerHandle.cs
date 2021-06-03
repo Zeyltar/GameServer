@@ -13,7 +13,7 @@ namespace Server
             int clientIdCheck = packet.ReadInt();
 
 
-            foreach (Client client in SocketServer.Rooms[fromRoom].Clients)
+            foreach (Client client in Room.Rooms[fromRoom].Clients)
             {
                 if (client.Id == fromClient)
                 {
@@ -24,6 +24,7 @@ namespace Server
                     else
                     {
                         Console.WriteLine($"{client.tcp.Socket.Client.RemoteEndPoint} connected successfully and is now client {fromClient}");
+                        client.isValidated = true;
                     }
                     return;
                 }
@@ -34,7 +35,7 @@ namespace Server
         {
             int cltCrtRoomCheck = packet.ReadInt();
 
-            foreach (Client client in SocketServer.Rooms[fromRoom].Clients)
+            foreach (Client client in Room.Rooms[fromRoom].Clients)
             {
                 if (client.Id == fromClient)
                 {

@@ -43,8 +43,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AsynchronousSocketListener.cs" />
     <Compile Include="Client.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="GameLogic.cs" />
     <Compile Include="ServerHandle.cs" />
     <Compile Include="ServerSend.cs" />
     <Compile Include="Packet.cs" />
@@ -52,7 +53,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Room.cs" />
     <Compile Include="SocketServer.cs" />
-    <Compile Include="StateObject.cs" />
+    <Compile Include="ThreadManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

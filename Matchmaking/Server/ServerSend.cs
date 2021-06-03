@@ -14,7 +14,7 @@ namespace Server
                 return;
 
             packet.WriteLength();
-            foreach (Client client in SocketServer.Rooms[toRoom].Clients)
+            foreach (Client client in Room.Rooms[toRoom].Clients)
             {
                 if (client.Id == toClient)
                 {
@@ -30,7 +30,7 @@ namespace Server
                 return;
 
             packet.WriteLength();
-            foreach (Client client in SocketServer.Rooms[toRoom].Clients)
+            foreach (Client client in Room.Rooms[toRoom].Clients)
             {
                 client.tcp.SendData(packet);
             }
@@ -42,7 +42,7 @@ namespace Server
                 return;
 
             packet.WriteLength();
-            foreach (Client client in SocketServer.Rooms[toRoom].Clients)
+            foreach (Client client in Room.Rooms[toRoom].Clients)
             {
                 if (client.Id == exceptClient)
                     continue;
@@ -53,7 +53,7 @@ namespace Server
         private static void SendTCPDataToAll(Packet packet)
         {
             packet.WriteLength();
-            foreach (Room room in SocketServer.Rooms)
+            foreach (Room room in Room.Rooms)
             {
                 foreach (Client client in room.Clients)
                 {
@@ -65,7 +65,7 @@ namespace Server
         private static void SendTCPDataToAll(int exceptClient, Packet packet)
         {
             packet.WriteLength();
-            foreach (Room room in SocketServer.Rooms)
+            foreach (Room room in Room.Rooms)
             {
                 foreach (Client client in room.Clients)
                 {
